@@ -50,22 +50,13 @@ class CreateLithophane(bpy.types.Operator):
 
     def execute(self, context):
         """Turn selected image into specified lithophane type."""
-        self.report({'INFO'}, 'Lithophane added')
-        mesh = bpy.data.meshes.new("lithophane")
-        obj = bpy.data.objects.new(
-            name=f"lithophane {context.scene.blit_type}", object_data=mesh)
-        obj.blit_is_lithophane = True
-        context.scene.collection.objects.link(obj)
-        obj.select_set(True)
-        context.view_layer.objects.active = obj
 
         # Create and add lithophane geometry node
         load_assets()
-        geom_node = obj.modifiers.new(type='NODES', name='lithophane')
-        geom_node.node_group = bpy.data.node_groups.new(
+        node_group = bpy.data.node_groups.new(
             type="GeometryNodeTree", name="gm_lithophane"
         )
-        image_node = geom_node.node_group.nodes.new(
+        image_node = node_group.nodes.new(
             type='GeometryNodeInputImage')
         try:
             image_node.image = bpy.data.images.load(
@@ -76,17 +67,29 @@ class CreateLithophane(bpy.types.Operator):
 
         lithophane_node_group_copy = (
             bpy.data.node_groups[f'Lithophane {context.scene.blit_type}'].copy())
-        litho_ng = geom_node.node_group.nodes.new(type="GeometryNodeGroup")
+        litho_ng = node_group.nodes.new(type="GeometryNodeGroup")
         litho_ng.name = 'Lithophane'
         litho_ng.node_tree = lithophane_node_group_copy
-        links = geom_node.node_group.links
+        links = node_group.links
         links.new(image_node.outputs['Image'], litho_ng.inputs['Image'])
         litho_ng.location[0] += 290
 
-        output_node = geom_node.node_group.nodes.new(type="NodeGroupOutput")
+        output_node = node_group.nodes.new(type="NodeGroupOutput")
         output_node.location = (480, 0)
         links.new(litho_ng.outputs['Geometry'], output_node.inputs[0])
 
+        # add object 
+        mesh = bpy.data.meshes.new("lithophane")
+        obj = bpy.data.objects.new(
+            name=f"lithophane {context.scene.blit_type}", object_data=mesh)
+        obj.blit_is_lithophane = True
+        context.scene.collection.objects.link(obj)
+        obj.select_set(True)
+        context.view_layer.objects.active = obj
+        geom_node = obj.modifiers.new(type='NODES', name='lithophane')
+        geom_node.node_group = node_group
+
+        self.report({'INFO'}, 'Lithophane added')
         return {'FINISHED'}
 
 
@@ -118,9 +121,9 @@ class LithophanePanel(bpy.types.Panel):
 
             node_group = context.object.modifiers['lithophane'].node_group
             for input_ in node_group.nodes['Lithophane'].inputs:
-                # if input_.name != 'Image':
-                row = box.row()
-                row.prop(input_, 'default_value', text=input_.name)
+                if input_.name != 'Image':
+                    row = box.row()
+                    row.prop(input_, 'default_value', text=input_.name)
         else:
             row.label(text='Selection: None')
 
