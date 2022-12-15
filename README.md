@@ -1,6 +1,7 @@
 # Blender Lithophane
 
-Blender Lithophane is a simple Blender addon for creating lithophanes from images. Note that Blender 3.5 (currently still in alpha) is required.
+Blender Lithophane is a simple Blender addon for creating lithophanes from images. Currently, a lithophane 'Plane', 'Arc', or 'Cylinder' can be created.
+Note that Blender 3.5 (currently still in alpha) is required.
 
 ## Installation
 
