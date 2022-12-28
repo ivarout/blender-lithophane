@@ -66,7 +66,7 @@ class CreateLithophane(bpy.types.Operator):
             return {'CANCELLED'}
 
         lithophane_node_group_copy = (
-            bpy.data.node_groups[f'Lithophane {context.scene.blit_type}'].copy())
+            bpy.data.node_groups[f'Lithophane {context.scene.blit_type} v2'].copy())
         litho_ng = node_group.nodes.new(type="GeometryNodeGroup")
         litho_ng.name = 'Lithophane'
         litho_ng.node_tree = lithophane_node_group_copy

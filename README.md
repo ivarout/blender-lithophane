@@ -1,11 +1,14 @@
 # Blender Lithophane
 
-Blender Lithophane is a simple Blender addon for creating lithophanes from images. Currently, a lithophane 'Plane', 'Arc', or 'Cylinder' can be created.
+Blender Lithophane is a simple Blender addon for creating lithophanes from images. Currently, a lithophane 'Plane', 'Arc', or 'Cylinder' can be created. 
 
+The lithophane thickness can be calculated using either a linear or logarithmic thickness model, which are currently based on the models used in [Cura](https://github.com/Ultimaker/Cura/blob/main/plugins/ImageReader/ImageReader.py).
 
 Note that [Blender 3.5.0](https://builder.blender.org/download/daily/archive/) (currently still in alpha) is required.
 
 ## Installation
+
+This addon is written for and tested in Blender 3.5.0 alpha ([Build fe30856d83c7](https://builder.blender.org/download/daily/archive/) December 11, 2022). The addon depends on the 'Image Info' and 'Image Input' geometry nodes that are introduces in Blender 3.5.0, hence previous Blender versions are not supported. Once Blender 3.5.0 goes into beta/release, I will try to make any necessary changes, but please let me know if it no longer works in the most recent Blender version.
 
 Download the git repository as a zip file, and install it in Blender from 'Edit&rarr;Preferences&rarr;Add-ons&rarr;Install', and select the zip file (note that there is no need to unzip).
 
@@ -13,7 +16,7 @@ Alternatively, rather than using the blender addon, you could just get the geome
 
 <img src="images/geometry_nodes.png">
 
-This addon is written for and tested in Blender 3.5.0 alpha ([Build fe30856d83c7](https://builder.blender.org/download/daily/archive/) December 11, 2022). The addon depends on the 'Image Info' and 'Image Input' geometry nodes that are introduces in Blender 3.5.0, hence previous Blender versions are not supported. Once Blender 3.5.0 goes into beta/release, I will try to make any necessary changes, but please let me know if it no longer works in the most recent Blender version.
+
 
 ## Usage
 
