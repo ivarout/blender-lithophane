@@ -4,11 +4,11 @@ Blender Lithophane is a simple Blender addon for creating lithophanes from image
 
 The lithophane thickness can be calculated using either a linear or logarithmic thickness model, which are currently based on the models used in [Cura](https://github.com/Ultimaker/Cura/blob/main/plugins/ImageReader/ImageReader.py).
 
-Note that [Blender 3.5.0](https://builder.blender.org/download/daily/archive/) (currently still in alpha) is required.
+Note that [Blender 3.5.0](blender.org) is required.
 
 ## Installation
 
-This addon is written for and tested in Blender 3.5.0 alpha ([Build fe30856d83c7](https://builder.blender.org/download/daily/archive/) December 11, 2022). The addon depends on the 'Image Info' and 'Image Input' geometry nodes that are introduces in Blender 3.5.0, hence previous Blender versions are not supported. Once Blender 3.5.0 goes into beta/release, I will try to make any necessary changes, but please let me know if it no longer works in the most recent Blender version.
+This addon is written for and tested in Blender 3.5.0. The addon depends on the 'Image Info' and 'Image Input' geometry nodes that are introduces in Blender 3.5.0, hence previous Blender versions are not supported. 
 
 Download the git repository as a zip file, and install it in Blender from 'Edit&rarr;Preferences&rarr;Add-ons&rarr;Install', and select the zip file (note that there is no need to unzip).
 

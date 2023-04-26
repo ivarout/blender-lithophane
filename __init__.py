@@ -22,8 +22,10 @@ bl_info = {
     "category": "Add Mesh"
 }
 
+import os
 import pathlib
 import bpy
+from bpy_extras.io_utils import ImportHelper
 
 ASSETS_PATH = pathlib.Path(__file__).parent.absolute() / "lithophane.blend"
 
@@ -42,11 +44,37 @@ def load_assets():
 load_assets.loaded = False
 
 
+class SelectImage(bpy.types.Operator, ImportHelper):
+    """Import drone paths from kml file.
+
+    Based on operator_file_import.py from Blender templates.
+    """
+
+    bl_idname = "blit.select_image"
+    bl_label = "Select image"
+    bl_description = "Select image for lithophane"
+
+    filename_ext = ".png"
+    filter_glob: bpy.props.StringProperty(
+        default="*.png",
+        options={'HIDDEN'},
+        maxlen=255,
+    )
+
+    def execute(self, context):
+        context.scene.blit_image_path = self.filepath
+        return {'FINISHED'}
+
+
 class CreateLithophane(bpy.types.Operator):
     """Turn an image into a lithophane."""
 
     bl_idname = "object.create_lithophane"
     bl_label = "Create Lithophane"
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene.blit_image_path
 
     def execute(self, context):
         """Turn selected image into specified lithophane type."""
@@ -56,6 +84,7 @@ class CreateLithophane(bpy.types.Operator):
         node_group = bpy.data.node_groups.new(
             type="GeometryNodeTree", name="gm_lithophane"
         )
+        node_group.outputs.new(type="NodeSocketGeometry", name="Geometry")
         image_node = node_group.nodes.new(
             type='GeometryNodeInputImage')
         try:
@@ -74,8 +103,10 @@ class CreateLithophane(bpy.types.Operator):
         links.new(image_node.outputs['Image'], litho_ng.inputs['Image'])
         litho_ng.location[0] += 290
 
+
         output_node = node_group.nodes.new(type="NodeGroupOutput")
         output_node.location = (480, 0)
+
         links.new(litho_ng.outputs['Geometry'], output_node.inputs[0])
 
         # add object 
@@ -105,10 +136,12 @@ class LithophanePanel(bpy.types.Panel):
     def draw(self, context):
         """Define UI layout."""
         layout = self.layout
-        row = layout.row()
-        row.prop(context.scene, 'blit_image_path')
-        row = layout.row()
-        row.prop(context.scene, 'blit_type')
+
+        split = layout.split(factor=0.7)
+        col1, col2 = (split.column(), split.column())
+        col1.prop(context.scene, 'blit_image_path', text="")
+        col2.operator('blit.select_image')
+        layout.prop(context.scene, 'blit_type')
 
         row = layout.row()
         row.scale_y = 1.4
@@ -128,11 +161,39 @@ class LithophanePanel(bpy.types.Panel):
             row.label(text='Selection: None')
 
 
+classes = [CreateLithophane, LithophanePanel, SelectImage]
+
+
+def show_error(message="", severity="INFO"):
+    """Display a message in the Blender UI."""
+    def draw(self, _context):
+        self.layout.label(text=message)
+    bpy.context.window_manager.popup_menu(draw, title=severity, icon='ERROR')
+
+
+def get_path(self):
+    """Define a 'get' function for file path."""
+    return self.get("blit_image_path", "")
+
+
+def set_path(self, value):
+    """Define a 'set' function for file path."""
+    value = bpy.path.abspath(value)
+    if not os.path.isfile(value):
+        self["blit_image_path"] = ""
+        show_error(f"invalid file path: '{value}'")
+        return
+    self["blit_image_path"] = value
+
+
 def register():
     """Add classes and types to Blender."""
     bpy.types.Object.blit_is_lithophane = bpy.props.BoolProperty()
     bpy.types.Scene.blit_image_path = bpy.props.StringProperty(
-        name='Image Path', subtype='FILE_PATH')
+        name='Image Path',
+        get=get_path,
+        set=set_path
+        )
     bpy.types.Scene.blit_type = bpy.props.EnumProperty(
         name='Geometry Type',
         items = [
@@ -141,14 +202,13 @@ def register():
             tuple(['Cylinder'] * 3),
         ]
     )
-    bpy.utils.register_class(CreateLithophane)
-    bpy.utils.register_class(LithophanePanel)
-
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
 def unregister():
     """Remove classes and types from Blender."""
     del bpy.types.Object.blit_is_lithophane
     del bpy.types.Scene.blit_image_path
     del bpy.types.Scene.blit_type
-    bpy.utils.unregister_class(CreateLithophane)
-    bpy.utils.unregister_class(LithophanePanel)
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
