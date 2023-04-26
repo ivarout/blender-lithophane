@@ -54,9 +54,8 @@ class SelectImage(bpy.types.Operator, ImportHelper):
     bl_label = "Select image"
     bl_description = "Select image for lithophane"
 
-    filename_ext = ".png"
     filter_glob: bpy.props.StringProperty(
-        default="*.png",
+        default="*.jpg;*.png;*.jpeg",
         options={'HIDDEN'},
         maxlen=255,
     )
